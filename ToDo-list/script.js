@@ -1,3 +1,5 @@
+const APIKey = '';
+
 const todoInput = document.querySelector('#todo-input');
 const todoList = document.querySelector('#todo-list');
 
@@ -73,3 +75,37 @@ if (savedTodoList) {
         createTodo(savedTodoList[i]);
     }
 }
+
+const weatherSearch = (position) => {
+    fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=${APIKey}`
+    )
+        .then((res) => {
+            // return JSON.parse(res); // JSON문자열을 JavaScript객체로 파싱
+            return res.json(); // HTTP응답객체를 JavaScript객체로 파싱
+            // response에 Header가 존재하면 JSON.parse사용 불가
+        })
+        .then((json) => {
+            console.log(json.name, json.weather[0].description); // res.json() 변환하는데 시간이 걸림 따라서 추가 then을 해준다.
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
+
+const accessToGeo = (position) => {
+    const positionObj = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+    };
+    weatherSearch(positionObj);
+};
+
+const locErr = (err) => {
+    console.log(err);
+};
+
+const askForLocation = () => {
+    navigator.geolocation.getCurrentPosition(accessToGeo, locErr);
+};
+askForLocation();
